@@ -1,10 +1,12 @@
+import { React, useState } from "react";
 import config from "../config.json";
 import styled from "styled-components";
-import { CSSReset } from "../src/components/CSSReset";
 import Menu from "../src/components/Menu";
 import { StyledTimeline } from "../src/components/Timeline";
 
 const StyledHeader = styled.div`
+    background-color: ${({theme}) => theme.backgroundLevel1};
+
     img {
         width: 80px;
         height: 80px;
@@ -15,13 +17,17 @@ const StyledHeader = styled.div`
         align-items: center;
         width: 100%;
         padding: 16px 32px;
-        margin-top: 50px;
         gap: 16px;
     }
+`;
+const StyledBanner = styled.div`
+    background-image: url(${({bg}) => bg});
+    height: 230px;
 `;
 function Header() {
     return (
         <StyledHeader>
+            <StyledBanner bg={config.bg} />
             <section className="user-info">
                 <img src={`https://github.com/${config.github}.png`} />
                 <div>
@@ -37,7 +43,7 @@ function Header() {
     )
 }
 
-function Timeline(prop) {
+function Timeline({searchValue, ...prop}) {
     const playlistNames = Object.keys(prop.playlists);
 
     return (
@@ -46,12 +52,16 @@ function Timeline(prop) {
                 const videos = prop.playlists[playlistName];
 
                 return (
-                    <section>
+                    <section key={playlistName}>
                         <h2>{playlistName}</h2>
                         <div>
-                            {videos.map((video) => {
+                            {videos.filter((video) => {
+                                const titleNormalized = video.title.toLowerCase();
+                                const searchValueNormalized = searchValue.toLowerCase();
+                                return titleNormalized.includes(searchValueNormalized);
+                            }).map((video) => {
                                 return (
-                                    <a href={video.url}>
+                                    <a key={video.url} href={video.url}>
                                         <img src={video.thumb} />
                                         <span>
                                             {video.title}
@@ -68,17 +78,18 @@ function Timeline(prop) {
 }
 
 function HomePage() {
+    const [valorDoFiltro, setValorDoFiltro] = useState('');
+
     return (
         <>
-            <CSSReset />
             <div style={{
                     display: "flex",
                     flexDirection: "column",
                     flex: 1,
                 }}>
-                <Menu />
+                <Menu valorDoFiltro={valorDoFiltro} setValorDoFiltro={setValorDoFiltro} />
                 <Header />
-                <Timeline playlists={config.playlists}>
+                <Timeline searchValue={valorDoFiltro} playlists={config.playlists}>
                     Conteúdo
                 </Timeline>
             </div>

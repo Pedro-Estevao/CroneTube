@@ -2,6 +2,7 @@
     "name": "Pedro Estevão",
     "description": "Web Developer",
     "github": "pedro-estevao",
+    "bg": "./src/assets/img/banner.jpg",
     "playlists": {
         "jogos": [
             {
